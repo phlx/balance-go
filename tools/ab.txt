@@ -1,0 +1,56 @@
+$ ab -c 100 -n 10000 http://localhost:3000/v1/transactions?user_id=1
+This is ApacheBench, Version 2.3 <$Revision: 1843412 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+Completed 1000 requests
+Completed 2000 requests
+Completed 3000 requests
+Completed 4000 requests
+Completed 5000 requests
+Completed 6000 requests
+Completed 7000 requests
+Completed 8000 requests
+Completed 9000 requests
+Completed 10000 requests
+Finished 10000 requests
+
+
+Server Software:
+Server Hostname:        localhost
+Server Port:            3000
+
+Document Path:          /v1/transactions?user_id=1
+Document Length:        1097 bytes
+
+Concurrency Level:      100
+Time taken for tests:   2.795 seconds
+Complete requests:      10000
+Failed requests:        0
+Total transferred:      12220000 bytes
+HTML transferred:       10970000 bytes
+Requests per second:    3577.78 [#/sec] (mean)
+Time per request:       27.950 [ms] (mean)
+Time per request:       0.280 [ms] (mean, across all concurrent requests)
+Transfer rate:          4269.57 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    1   0.7      0       4
+Processing:     4   27  11.0     25     173
+Waiting:        3   27  10.9     25     173
+Total:          5   28  11.1     26     176
+WARNING: The median and mean for the initial connection time are not within a normal deviation
+        These results are probably not that reliable.
+
+Percentage of the requests served within a certain time (ms)
+  50%     26
+  66%     30
+  75%     33
+  80%     35
+  90%     41
+  95%     47
+  98%     53
+  99%     58
+ 100%    176 (longest request)

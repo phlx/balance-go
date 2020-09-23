@@ -1,0 +1,49 @@
+idempotence: saved responses for idempotency keys
+example:
+
+    key:    idempotence:56d6a679-d4d0-4c8a-bfde-6c620928bb96
+    value:  {
+        "status": 200,
+        "headers": {"content-type":"application/json"},
+        "response": {"balance":123.45}
+    }
+
+currencies: saved currencies by dates
+example:
+
+    key: currency:base=USD,date=2020-09-15
+    value: {
+        "CAD":0.0175463209,
+        "HKD":0.1034373236,
+        "ISK":1.8024428375,
+        "PHP":0.645433905,
+        "DKK":0.0834959759,
+        "HUF":4.0143073109,
+        "CZK":0.3010842715,
+        "GBP":0.0103359884,
+        "RON":0.0545199677,
+        "SEK":0.1167659731,
+        "IDR":198.1303303094,
+        "INR":0.9822583958,
+        "BRL":0.0698889915,
+        "RUB":1.0,
+        "HRK":0.0845947253,
+        "JPY":1.4072746413,
+        "THB":0.4161443211,
+        "CHF":0.0120851211,
+        "EUR":0.0112231808,
+        "MYR":0.0551282641,
+        "BGN":0.021950297,
+        "TRY":0.0999121225,
+        "CNY":0.0903757858,
+        "NOK":0.1200465089,
+        "NZD":0.0198369721,
+        "ZAR":0.2196028565,
+        "USD":0.0133466066,
+        "MXN":0.2798017537,
+        "SGD":0.0181400271,
+        "AUD":0.018202877,
+        "ILS":0.0456502879,
+        "KRW":15.7206460512,
+        "PLN":0.0498993842
+    }

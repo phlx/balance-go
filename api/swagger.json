@@ -1,0 +1,1021 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "version": "1.0.0",
+    "title": "Balance Microservice",
+    "description": "Microservice which operates with users balance",
+    "contact": {
+      "name": "Stanislav Varnavsky",
+      "url": "http://github.com/phlx"
+    },
+    "license": {
+      "name": "The MIT License",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "externalDocs": {
+    "description": "Postman Collection Viewer",
+    "url": "https://documenter.getpostman.com/view/6261504/TVKD2czt"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "docker"
+    },
+    {
+      "url": "http://localhost:8080",
+      "description": "debug"
+    }
+  ],
+  "paths": {
+    "/_health": {
+      "get": {
+        "summary": "Health check for microservice",
+        "responses": {
+          "200": {
+            "description": "Only possible response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/_health.response"
+                },
+                "examples": {
+                  "good": {
+                    "$ref": "#/components/examples/_health.response.good"
+                  },
+                  "bad": {
+                    "$ref": "#/components/examples/_health.response.bad"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/balance": {
+      "get": {
+        "summary": "Get users balance",
+        "parameters": [{
+          "in": "query",
+          "name": "user_id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }, {
+          "in": "query",
+          "name": "currency",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "RUB",
+            "enum": [
+              "RUB",
+              "AUD",
+              "BGN",
+              "BRL",
+              "CAD",
+              "CHF",
+              "CNY",
+              "CZK",
+              "DKK",
+              "EUR",
+              "GBP",
+              "HKD",
+              "HRK",
+              "HUF",
+              "IDR",
+              "ILS",
+              "INR",
+              "ISK",
+              "JPY",
+              "KRW",
+              "MXN",
+              "MYR",
+              "NOK",
+              "NZD",
+              "PHP",
+              "PLN",
+              "RON",
+              "SEK",
+              "SGD",
+              "THB",
+              "TRY",
+              "USD",
+              "ZAR"
+            ]
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "Success response with user balance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1.balance.response"
+                },
+                "examples": {
+                  "success": {
+                    "$ref": "#/components/examples/v1.balance.response.ok"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Response for not founded user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.response"
+                },
+                "examples": {
+                  "balance_not_found": {
+                    "$ref": "#/components/examples/error.balance_not_found"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response on internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.response"
+                },
+                "examples": {
+                  "internal": {
+                    "$ref": "#/components/examples/error.internal"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/transactions": {
+      "get": {
+        "summary": "Get users transactions",
+        "parameters": [{
+          "in": "query",
+          "name": "user_id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }, {
+          "in": "query",
+          "name": "page",
+          "required": false,
+          "schema": {
+            "type": "number",
+            "default": 1
+          }
+        }, {
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "type": "number",
+            "default": 10
+          }
+        }, {
+          "in": "query",
+          "name": "sort",
+          "style": "deepObject",
+          "explode": true,
+          "schema": {
+            "type": "object",
+            "required": false,
+            "default": {
+              "time": "desc"
+            },
+            "properties": {
+              "id": {
+                "type": "string",
+                "enum": ["asc", "desc"]
+              },
+              "time": {
+                "type": "string",
+                "enum": ["asc", "desc"]
+              },
+              "amount": {
+                "type": "string",
+                "enum": ["asc", "desc"]
+              }
+            }
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "Success response with user transactions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1.transactions.response"
+                },
+                "examples": {
+                  "success": {
+                    "$ref": "#/components/examples/v1.transactions.response.ok"
+                  },
+                  "empty": {
+                    "$ref": "#/components/examples/v1.transactions.response.empty"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response on internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.response"
+                },
+                "examples": {
+                  "internal": {
+                    "$ref": "#/components/examples/error.internal"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/give": {
+      "post": {
+        "summary": "Add money to users balance",
+        "parameters": [{
+          "$ref": "#/components/parameters/idempotency"
+        }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/v1.give.request"
+              },
+              "examples": {
+                "hundred": {
+                  "$ref": "#/components/examples/v1.give.request.hundred"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success response with created transaction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1.give.response"
+                },
+                "examples": {
+                  "success": {
+                    "$ref": "#/components/examples/v1.give.response.ok"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Response for invalid amount",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.response"
+                },
+                "examples": {
+                  "validation_invalid_amount": {
+                    "$ref": "#/components/examples/error.validation_invalid_amount"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response on internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.response"
+                },
+                "examples": {
+                  "internal": {
+                    "$ref": "#/components/examples/error.internal"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/take": {
+      "post": {
+        "summary": "Write-off money from users balance",
+        "parameters": [{
+          "$ref": "#/components/parameters/idempotency"
+        }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/v1.take.request"
+              },
+              "examples": {
+                "hundred": {
+                  "$ref": "#/components/examples/v1.take.request.hundred"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success response with created transaction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1.take.response"
+                },
+                "examples": {
+                  "success": {
+                    "$ref": "#/components/examples/v1.take.response.ok"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Response for case of insufficient funds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.response"
+                },
+                "examples": {
+                  "validation_invalid_amount": {
+                    "$ref": "#/components/examples/error.insufficient_funds"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response on internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.response"
+                },
+                "examples": {
+                  "internal": {
+                    "$ref": "#/components/examples/error.internal"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/move": {
+      "post": {
+        "summary": "Move money from user to another user",
+        "parameters": [{
+          "$ref": "#/components/parameters/idempotency"
+        }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/v1.move.request"
+              },
+              "examples": {
+                "hundred": {
+                  "$ref": "#/components/examples/v1.move.request.hundred"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success response with created transaction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1.move.response"
+                },
+                "examples": {
+                  "success": {
+                    "$ref": "#/components/examples/v1.move.response.ok"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Response for case of from_user is not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.response"
+                },
+                "examples": {
+                  "validation_invalid_amount": {
+                    "$ref": "#/components/examples/error.user_not_found"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Response on internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error.response"
+                },
+                "examples": {
+                  "internal": {
+                    "$ref": "#/components/examples/error.internal"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "error.response": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "Symbol code of error",
+                  "type": "string",
+                  "enum": [
+                    "internal_error",
+                    "validation_error:{{field}}",
+                    "balance_not_found",
+                    "user_not_found",
+                    "insufficient_funds"
+                  ]
+                },
+                "detail": {
+                  "description": "Human readable description of error",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "_health.response": {
+        "type": "object",
+        "properties": {
+          "postgres": {
+            "type": "boolean"
+          },
+          "redis": {
+            "type": "boolean"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "time": {
+            "type": "string"
+          },
+          "latency_ms": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "v1.balance.response": {
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string",
+            "enum": [
+              "AUD",
+              "BGN",
+              "BRL",
+              "CAD",
+              "CHF",
+              "CNY",
+              "CZK",
+              "DKK",
+              "EUR",
+              "GBP",
+              "HKD",
+              "HRK",
+              "HUF",
+              "IDR",
+              "ILS",
+              "INR",
+              "ISK",
+              "JPY",
+              "KRW",
+              "MXN",
+              "MYR",
+              "NOK",
+              "NZD",
+              "PHP",
+              "PLN",
+              "RON",
+              "RUB",
+              "SEK",
+              "SGD",
+              "THB",
+              "TRY",
+              "USD",
+              "ZAR"
+            ]
+          },
+          "balance": {
+            "type": "number"
+          }
+        }
+      },
+      "v1.transactions.response": {
+        "type": "object",
+        "properties": {
+          "transactions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "time": {
+                  "type": "string",
+                  "example": "2020-09-22T01:25:26.642717Z"
+                },
+                "amount": {
+                  "type": "number",
+                  "format": "double",
+                  "example": -123.45
+                },
+                "from_user_id": {
+                  "type": "integer",
+                  "format": "int64",
+                  "nullable": true
+                },
+                "reason": {
+                  "type": "string",
+                  "description": "Textual description of transaction reason"
+                }
+              }
+            }
+          },
+          "pages": {
+            "type": "number",
+            "description": "Count of all pages with current limit"
+          }
+        }
+      },
+      "v1.give.response": {
+        "type": "object",
+        "properties": {
+          "transaction": {
+            "type": "integer",
+            "format": "int64",
+            "example": 37
+          },
+          "time": {
+            "type": "string",
+            "example": "2020-09-22T04:22:15.6995115+03:00"
+          }
+        }
+      },
+      "v1.give.request": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "format": "int64",
+            "required": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "required": true,
+            "description": "Amount of money (>0)"
+          },
+          "reason": {
+            "type": "string",
+            "required": false,
+            "description": "Reason for this transaction"
+          }
+        }
+      },
+      "v1.take.response": {
+        "type": "object",
+        "properties": {
+          "transaction": {
+            "type": "integer",
+            "format": "int64",
+            "example": 73
+          },
+          "time": {
+            "type": "string",
+            "example": "2020-09-22T04:22:15.6995115+03:00"
+          }
+        }
+      },
+      "v1.take.request": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "format": "int64",
+            "required": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "required": true,
+            "description": "Amount of money (>0)"
+          },
+          "reason": {
+            "type": "string",
+            "required": false,
+            "description": "Reason for this transaction"
+          }
+        }
+      },
+      "v1.move.response": {
+        "type": "object",
+        "properties": {
+          "transaction_from_id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 73
+          },
+          "transaction_from_time": {
+            "type": "string",
+            "example": "2020-09-22T04:22:15.6995115+03:00"
+          },
+          "transaction_to_id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 37
+          },
+          "transaction_to_time": {
+            "type": "string",
+            "example": "2020-09-22T04:22:15.9665115+03:00"
+          }
+        }
+      },
+      "v1.move.request": {
+        "type": "object",
+        "properties": {
+          "from_user_id": {
+            "type": "integer",
+            "format": "int64",
+            "required": true
+          },
+          "to_user_id": {
+            "type": "integer",
+            "format": "int64",
+            "required": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "required": true,
+            "description": "Amount of money (>0)"
+          },
+          "reason": {
+            "type": "string",
+            "required": false,
+            "description": "Reason for this transaction"
+          }
+        }
+      }
+    },
+    "parameters": {
+      "idempotency": {
+        "in": "header",
+        "name": "X-Idempotency-Key",
+        "description": "Key for making request behavior idempotent",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "example": "cafebabe-dead-face-beef-defec8ed0000"
+        },
+        "examples": {
+          "00": {
+            "value": "cafebabe-dead-face-beef-defec8ed0000"
+          },
+          "10": {
+            "value": "cafebabe-dead-face-beef-defec8ed0010"
+          },
+          "20": {
+            "value": "cafebabe-dead-face-beef-defec8ed0020"
+          },
+          "30": {
+            "value": "cafebabe-dead-face-beef-defec8ed0030"
+          },
+          "40": {
+            "value": "cafebabe-dead-face-beef-defec8ed0040"
+          },
+          "50": {
+            "value": "cafebabe-dead-face-beef-defec8ed0050"
+          },
+          "60": {
+            "value": "cafebabe-dead-face-beef-defec8ed0060"
+          },
+          "70": {
+            "value": "cafebabe-dead-face-beef-defec8ed0070"
+          },
+          "80": {
+            "value": "cafebabe-dead-face-beef-defec8ed0080"
+          },
+          "90": {
+            "value": "cafebabe-dead-face-beef-defec8ed0090"
+          }
+        }
+      }
+    },
+    "examples": {
+      "error.balance_not_found": {
+        "description": "Not found balance error",
+        "value": {
+          "errors": [
+            {
+              "code": "balance_not_found",
+              "detail": "Not found balance for user 12"
+            }
+          ]
+        }
+      },
+      "error.user_not_found": {
+        "description": "Not found user error",
+        "value": {
+          "errors": [
+            {
+              "code": "user_not_found",
+              "detail": "User was not found"
+            }
+          ]
+        }
+      },
+      "error.validation_invalid_amount": {
+        "description": "Validation error with invalid amount",
+        "value": {
+          "errors": [
+            {
+              "code": "validation_error:amount",
+              "detail": "Validation for field 'amount' failed rule 'gte'"
+            }
+          ]
+        }
+      },
+      "error.insufficient_funds": {
+        "description": "Validation error for case of insufficient user funds",
+        "value": {
+          "errors": [
+            {
+              "code": "insufficient_funds",
+              "detail": "User has insufficient funds"
+            }
+          ]
+        }
+      },
+      "error.internal": {
+        "description": "Internal Server Error",
+        "value": {
+          "errors": [
+            {
+              "code": "internal_error",
+              "detail": "Internal Server Error"
+            }
+          ]
+        }
+      },
+      "_health.response.good": {
+        "description": "All systems are ok",
+        "value": {
+          "postgres": true,
+          "redis": true,
+          "errors": [],
+          "time": "2020-09-22T04:18:48.4284748+03:00",
+          "latency_ms": 6
+        }
+      },
+      "_health.response.bad": {
+        "description": "Failed to connect to Redis",
+        "value": {
+          "postgres": true,
+          "redis": false,
+          "errors": [
+            "dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it."
+          ],
+          "time": "2020-09-22T18:05:36.7023982+03:00",
+          "latency_ms": 2341
+        }
+      },
+      "v1.balance.response.ok": {
+        "description": "Success request for user balance",
+        "value": {
+          "currency": "IDR",
+          "balance": 325.55
+        }
+      },
+      "v1.transactions.response.ok": {
+        "description": "Success request for user transactions",
+        "value": {
+          "transactions": [
+            {
+              "id": 99,
+              "time": "2020-09-22T01:25:26.642717Z",
+              "amount": -0.36,
+              "from_user_id": 2,
+              "reason": "Move it"
+            },
+            {
+              "id": 97,
+              "time": "2020-09-22T01:24:43.077648Z",
+              "amount": -0.36,
+              "from_user_id": 2,
+              "reason": "Move it"
+            },
+            {
+              "id": 96,
+              "time": "2020-09-22T01:23:57.073696Z",
+              "amount": -1,
+              "from_user_id": null,
+              "reason": "I'll take it"
+            },
+            {
+              "id": 95,
+              "time": "2020-09-22T01:23:22.703813Z",
+              "amount": -0.12,
+              "from_user_id": null,
+              "reason": "I'll take it"
+            },
+            {
+              "id": 94,
+              "time": "2020-09-22T01:23:11.275153Z",
+              "amount": 0.12,
+              "from_user_id": null,
+              "reason": "Nothing personal"
+            },
+            {
+              "id": 93,
+              "time": "2020-09-22T01:22:15.699512Z",
+              "amount": 0.12,
+              "from_user_id": null,
+              "reason": "Nothing personal"
+            },
+            {
+              "id": 32,
+              "time": "2020-09-21T23:03:14.077005Z",
+              "amount": -0.12,
+              "from_user_id": null,
+              "reason": "potracheno"
+            },
+            {
+              "id": 30,
+              "time": "2020-09-21T22:54:12.532842Z",
+              "amount": -0.12,
+              "from_user_id": 2,
+              "reason": "Move it"
+            },
+            {
+              "id": 29,
+              "time": "2020-09-21T22:53:53.279345Z",
+              "amount": -0.12,
+              "from_user_id": null,
+              "reason": "I'll take it"
+            },
+            {
+              "id": 28,
+              "time": "2020-09-21T22:53:44.529056Z",
+              "amount": -0.12,
+              "from_user_id": null,
+              "reason": "I'll take it"
+            },
+            {
+              "id": 27,
+              "time": "2020-09-21T22:53:30.275638Z",
+              "amount": 0.12,
+              "from_user_id": null,
+              "reason": "Nothing personal"
+            },
+            {
+              "id": 26,
+              "time": "2020-09-21T22:26:14.124184Z",
+              "amount": -0.12,
+              "from_user_id": null,
+              "reason": "I'll take it"
+            },
+            {
+              "id": 25,
+              "time": "2020-09-20T14:48:42.49364Z",
+              "amount": -0.12,
+              "from_user_id": null,
+              "reason": "I'll take it"
+            },
+            {
+              "id": 24,
+              "time": "2020-09-20T14:46:42.272622Z",
+              "amount": 0.12,
+              "from_user_id": null,
+              "reason": "Nothing personal"
+            },
+            {
+              "id": 22,
+              "time": "2020-09-20T10:47:41.205058Z",
+              "amount": -0.12,
+              "from_user_id": 2,
+              "reason": "Move it"
+            }
+          ],
+          "pages": 3
+        }
+      },
+      "v1.transactions.response.empty": {
+        "description": "Request for non-existed user",
+        "value": {
+          "transactions": [],
+          "pages": 0
+        }
+      },
+      "v1.give.request.hundred": {
+        "description": "Request body for give transaction with amount = 100",
+        "value": {
+          "user_id": 1,
+          "amount": 100.00,
+          "reason": "Thanks giving"
+        }
+      },
+      "v1.give.response.ok": {
+        "description": "Success transaction for give",
+        "value": {
+          "transaction": 93,
+          "time": "2020-09-22T04:22:15.6995115+03:00"
+        }
+      },
+      "v1.take.request.hundred": {
+        "description": "Request body for take transaction with amount = 100",
+        "value": {
+          "user_id": 1,
+          "amount": 100.00,
+          "reason": "Thanks taking"
+        }
+      },
+      "v1.take.response.ok": {
+        "description": "Success transaction for take",
+        "value": {
+          "transaction": 94,
+          "time": "2020-09-22T04:23:16.4425115+03:00"
+        }
+      },
+      "v1.move.request.hundred": {
+        "description": "Request body for move transaction with amount = 100",
+        "value": {
+          "from_user_id": 1,
+          "to_user_id": 2,
+          "amount": 100.00,
+          "reason": "Thanks moving"
+        }
+      },
+      "v1.move.response.ok": {
+        "description": "Success transaction for move",
+        "value": {
+          "transaction_from_id": 97,
+          "transaction_from_time": "2020-09-22T04:24:43.0776483+03:00",
+          "transaction_to_id": 98,
+          "transaction_to_time": "2020-09-22T04:24:43.0786524+03:00"
+        }
+      }
+    }
+  }
+}

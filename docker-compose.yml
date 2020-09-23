@@ -1,0 +1,99 @@
+version: '3'
+
+services:
+
+  app:
+    container_name: app
+    build:
+      context: ./
+      dockerfile: deployments/docker-compose/app/Dockerfile
+    ports:
+      - "3000:8080"
+    restart: unless-stopped
+    depends_on:
+      - redis
+    environment:
+      REDIS_URL: redis:6379
+    networks:
+      - backend
+
+  redis:
+    container_name: redis
+    image: "redis:alpine"
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+
+  postgres:
+    container_name: postgres
+    image: postgres:13-alpine
+    restart: unless-stopped
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=master
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=app
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+
+  postgres_test:
+    container_name: postgres_test
+    image: postgres:13-alpine
+    restart: unless-stopped
+    volumes:
+      - postgres_test:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=master_test
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=app_test
+    ports:
+      - "6543:5432"
+    networks:
+      - backend
+
+  swagger:
+    container_name: swagger
+    image: swaggerapi/swagger-ui:latest
+    restart: unless-stopped
+    environment:
+      - SWAGGER_JSON=/swagger.json
+    ports:
+      - "80:8080"
+    volumes:
+      - ./api/swagger.json:/swagger.json
+    networks:
+      - backend
+
+  graphite: # data-source: http://graphite:80
+    container_name: graphite
+    image: graphiteapp/graphite-statsd:latest
+    restart: unless-stopped
+    ports:
+      - "3030:80"
+      - "2003-2004:2003-2004"
+      - "2023-2024:2023-2024"
+      - "8125:8125/udp"
+      - "8126:8126"
+    networks:
+      - backend
+
+  grafana: # login: admin:admin
+    container_name: grafana
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    ports:
+      - "3080:3000"
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  postgres:
+  postgres_test:
