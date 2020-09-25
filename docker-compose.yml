@@ -12,8 +12,9 @@ services:
     restart: unless-stopped
     depends_on:
       - redis
+      - postgres
     environment:
-      REDIS_URL: redis:6379
+      - TZ=Europe/Moscow
     networks:
       - backend
 
@@ -36,6 +37,8 @@ services:
       - POSTGRES_USER=master
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=app
+      - TZ=Europe/Moscow
+      - PGTZ=Europe/Moscow
     ports:
       - "5432:5432"
     networks:
@@ -51,6 +54,8 @@ services:
       - POSTGRES_USER=master_test
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=app_test
+      - TZ=Europe/Moscow
+      - PGTZ=Europe/Moscow
     ports:
       - "6543:5432"
     networks:

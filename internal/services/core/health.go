@@ -8,6 +8,7 @@ import (
 	"github.com/go-pg/pg/v10"
 
 	"balance/internal/redis"
+	"balance/internal/utils"
 )
 
 type Result struct {
@@ -42,7 +43,7 @@ func checkPostgres(ctx context.Context, p *pg.DB) error {
 }
 
 func checkRedis(ctx context.Context, r redis.Client) error {
-	t := time.Now().String()
+	t := utils.Now().String()
 	hash := md5.Sum([]byte(t)) // #nosec
 	key := "temp:" + string(hash[:])
 	err := r.Set(ctx, key, t, 1*time.Second)

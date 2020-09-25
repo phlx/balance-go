@@ -21,7 +21,11 @@ rerun: ## Stop Docker Compose, build application container, run Docker Compose
 
 .PHONY: test
 test: ## Run all tests inside app container
-	@docker-compose exec -e CGO_ENABLED=0 app go test ./...
+	@docker-compose exec -e CGO_ENABLED=0 app go clean -testcache && go test ./... -p 1
+
+.PHONY: test-local
+test-local: ## Run all tests on host machine with debug mode
+	@go clean -testcache && go test ./... -p 1 -args -debug
 
 .PHONY: fmt
 fmt: ## Run fmt with latest docker image of golang

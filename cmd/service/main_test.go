@@ -30,8 +30,7 @@ func TestHealth(t *testing.T) {
 func build(debug bool) *core.Service {
 	ctx := context.Background()
 
-	test := true
-	deps := container.Build(ctx, &debug, &test)
+	deps := container.Build(ctx, debug, true)
 
 	err := postgres.CreateDatabaseSchema(deps.Postgres)
 	if err != nil {
@@ -41,7 +40,7 @@ func build(debug bool) *core.Service {
 	exchangeRatesClient := exchangerates.NewClient(deps.HttpClient)
 	exchangeRatesService := exchangerates.NewService(exchangeRatesClient, deps.Redis)
 
-	coreService := core.New(ctx, deps.Redis, deps.Postgres, deps.Logger, deps.Stats, exchangeRatesService)
+	coreService := core.New(ctx, deps.Redis, deps.Postgres, deps.Logger, deps.Metrics, exchangeRatesService)
 
 	return coreService
 }

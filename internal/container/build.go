@@ -12,48 +12,63 @@ import (
 
 	"balance/internal/config"
 	"balance/internal/logger"
+	"balance/internal/metrics"
 	"balance/internal/postgres"
 	"balance/internal/redis"
 )
 
 type Container struct {
 	Logger     *logrus.Logger
-	Stats      *statsd.Client
 	Postgres   *pg.DB
+	Metrics    metrics.Client
 	Redis      redis.Client
 	HttpClient *http.Client
 }
 
-func Build(ctx context.Context, debug *bool, test *bool) *Container {
-	log := logger.New(*debug)
+func Build(ctx context.Context, debug bool, test bool) *Container {
+	loggerClient := logger.New(debug)
 
-	cfg, err := config.Load(*debug, *test)
+	cfg, err := config.Load(debug, test)
 	if err != nil {
-		log.WithContext(ctx).Fatal(err)
+		loggerClient.WithContext(ctx).Fatal(errors.Wrap(err, "unable to load config"))
 	}
 
-	if *test && cfg.Environment != "test" {
+	if test && cfg.Environment != "test" {
 		err := errors.Errorf("aborted: test run in non-test environment (ENV=%s)", cfg.Environment)
-		log.WithContext(ctx).Fatal(err)
+		loggerClient.WithContext(ctx).Fatal(err)
 	}
 
-	stats, err := statsd.New(statsd.Address(cfg.StatsDAddress))
+	var metricsClient metrics.Client
+	if test {
+		metricsClient = metrics.NewStub()
+	} else {
+		stats, err := statsd.New(statsd.Address(cfg.StatsDAddress))
+		if err != nil {
+			err = errors.Wrapf(err, "unable to create StatsD client with addr %s", cfg.StatsDAddress)
+			loggerClient.WithContext(ctx).Fatal(err)
+		}
+		metricsClient = metrics.New(stats)
+	}
+
+	var redisClient redis.Client
+	if test {
+		redisClient = redis.NewStub()
+	} else {
+		redisClient, err = redis.New(ctx, cfg.RedisAddress)
+		if err != nil {
+			err = errors.Wrapf(err, "unable to create Redis client with addr %s", cfg.RedisAddress)
+			loggerClient.WithContext(ctx).Fatal(err)
+		}
+	}
+
+	postgresClient, err := postgres.Client(ctx, cfg.PostgresUrl)
 	if err != nil {
-		log.WithContext(ctx).Fatal(err)
+		err = errors.Wrapf(err, "unable to create Postgres client with URL %s", cfg.PostgresUrl)
+		loggerClient.WithContext(ctx).Fatal(err)
 	}
+	postgresClient.AddQueryHook(postgres.NewHook(loggerClient))
 
-	rds, err := redis.New(ctx, cfg)
-	if err != nil {
-		log.WithContext(ctx).Fatal(err)
-	}
-
-	db, err := postgres.Client(ctx, cfg)
-	if err != nil {
-		log.WithContext(ctx).Fatal(err)
-	}
-	db.AddQueryHook(postgres.NewHook(log))
-
-	httpClient := http.Client{
+	httpClient := &http.Client{
 		Transport: &http.Transport{
 			Proxy:           nil,
 			MaxIdleConns:    10,
@@ -63,10 +78,10 @@ func Build(ctx context.Context, debug *bool, test *bool) *Container {
 	}
 
 	return &Container{
-		Logger:     log,
-		Stats:      stats,
-		Postgres:   db,
-		Redis:      rds,
-		HttpClient: &httpClient,
+		Logger:     loggerClient,
+		Metrics:    metricsClient,
+		Postgres:   postgresClient,
+		Redis:      redisClient,
+		HttpClient: httpClient,
 	}
 }

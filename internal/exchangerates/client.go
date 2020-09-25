@@ -29,8 +29,8 @@ type Client struct {
 	httpClient *http.Client
 }
 
-func (c *Client) Latest(ctx context.Context, base string) (*LatestResponse, error) {
-	url := baseUrl + "/latest?base=" + base
+func (c *Client) Latest(ctx context.Context) (*LatestResponse, error) {
+	url := baseUrl + "/latest?base=" + string(RUB)
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err

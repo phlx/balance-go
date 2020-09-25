@@ -6,14 +6,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"gopkg.in/alexcesaro/statsd.v2"
 
 	"balance/internal/controllers"
 	"balance/internal/metrics"
 	"balance/internal/services/core"
+	"balance/internal/utils"
 )
 
-func Controller(coreService *core.Service, stats *statsd.Client) gin.HandlerFunc {
+func Controller(coreService *core.Service, stats metrics.Client) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		defer stats.NewTiming().Send(metrics.ControllersTakeTiming)
 		stats.Increment(metrics.ControllersTakeCount)
@@ -55,7 +55,7 @@ func Controller(coreService *core.Service, stats *statsd.Client) gin.HandlerFunc
 
 		context.JSON(http.StatusOK, Response{
 			Transaction: tx.Id,
-			Time:        tx.CreatedAt,
+			Time:        utils.Format(tx.CreatedAt),
 		})
 		stats.Increment(metrics.Responses200AllCount)
 	}

@@ -11,12 +11,13 @@ import (
 	"github.com/pkg/errors"
 
 	"balance/internal/redis"
+	"balance/internal/utils"
 )
 
 type Currency string
 
 const (
-	RedisCachedKeyPattern   = "currency:base=%s,date=%s"
+	RedisCachedKeyPattern   = "currency:date=%s"
 	RedisCacheRatesDuration = 24 * time.Hour
 
 	AUD Currency = "AUD"
@@ -85,25 +86,20 @@ func NewService(client *Client, redis redis.Client) *Service {
 	}
 }
 
-func (s *Service) getCachedRate(ctx context.Context, base Currency, target Currency) (float64, error) {
-	cached, err := s.redis.Get(ctx, getRedisKey(base))
+func (s *Service) getCachedRate(ctx context.Context, target Currency) (float64, error) {
+	cached, err := s.GetCachedRates(ctx)
 	if err != nil {
 		return 0, err
 	}
-	var rates map[Currency]float64
-	err = json.Unmarshal([]byte(cached), &rates)
-	if err != nil {
-		return 0, errors.Wrapf(err, "Unable to unmarshal JSON from string '%s'", cached)
-	}
-	rate, ok := rates[target]
+	rate, ok := (*cached)[target]
 	if !ok {
 		return 0, errors.Errorf("Unable to find cached rate for target currency %s", target)
 	}
 	return rate, nil
 }
 
-func (s *Service) GetRate(ctx context.Context, base Currency, target Currency) (float64, error) {
-	cached, err := s.getCachedRate(ctx, base, target)
+func (s *Service) GetRate(ctx context.Context, target Currency) (float64, error) {
+	cached, err := s.getCachedRate(ctx, target)
 	if err != nil && err != goredis.Nil {
 		return 0, err
 	}
@@ -111,7 +107,7 @@ func (s *Service) GetRate(ctx context.Context, base Currency, target Currency) (
 		return cached, nil
 	}
 
-	response, err := s.client.Latest(ctx, string(base))
+	response, err := s.client.Latest(ctx)
 	if err != nil {
 		return 0, err
 	}
@@ -119,29 +115,42 @@ func (s *Service) GetRate(ctx context.Context, base Currency, target Currency) (
 	if !ok {
 		return 0, errors.Errorf("Unable to find rate for target currency %+v", target)
 	}
-	ratesJson, err := json.Marshal(response.Rates)
-	if err != nil {
-		return 0, err
-	}
-	err = s.redis.Set(ctx, getRedisKey(base), ratesJson, RedisCacheRatesDuration)
+	err = s.SetCachedRates(ctx, response.Rates)
 	if err != nil {
 		return 0, err
 	}
 	return rate, nil
 }
 
-func (s *Service) GetRateForUSD(ctx context.Context, base Currency) (float64, error) {
-	return s.GetRate(ctx, base, USD)
+func (s *Service) GetCachedRates(ctx context.Context) (*map[Currency]float64, error) {
+	cached, err := s.redis.Get(ctx, getRedisKey())
+	if err != nil {
+		return nil, err
+	}
+	var rates map[Currency]float64
+	err = json.Unmarshal([]byte(cached), &rates)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Unable to unmarshal JSON from string '%s'", cached)
+	}
+	return &rates, nil
 }
 
-func (s *Service) GetRateForUSDBasedOnRUB(ctx context.Context) (float64, error) {
-	return s.GetRate(ctx, RUB, USD)
+func (s *Service) SetCachedRates(ctx context.Context, rates map[Currency]float64) error {
+	ratesJson, err := json.Marshal(rates)
+	if err != nil {
+		return err
+	}
+	err = s.redis.Set(ctx, getRedisKey(), ratesJson, RedisCacheRatesDuration)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func currentDate() string {
-	return time.Now().Format("2006-01-02")
+	return utils.Now().Format("2006-01-02")
 }
 
-func getRedisKey(base Currency) string {
-	return fmt.Sprintf(RedisCachedKeyPattern, base, currentDate())
+func getRedisKey() string {
+	return fmt.Sprintf(RedisCachedKeyPattern, currentDate())
 }

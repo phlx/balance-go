@@ -7,6 +7,7 @@ import (
 
 	"balance/internal/models"
 	"balance/internal/postgres"
+	"balance/internal/utils"
 )
 
 func (s *Service) Take(
@@ -42,7 +43,7 @@ func (s *Service) Take(
 		}
 
 		balance.Balance = sub(balance.Balance, amount)
-		balance.UpdatedAt = time.Now()
+		balance.UpdatedAt = utils.Now()
 
 		if balance.Balance < 0 {
 			return ErrorInsufficientFunds
@@ -64,7 +65,7 @@ func (s *Service) Take(
 		transaction.Amount = -round(amount)
 		transaction.InitiatorId = initiatorID
 		transaction.Reason = reason
-		transaction.CreatedAt = time.Now()
+		transaction.CreatedAt = utils.Now()
 
 		_, err = tx.Model(transaction).Insert()
 		if err != nil {

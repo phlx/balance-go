@@ -2,14 +2,22 @@ package logger
 
 import (
 	"encoding/json"
+	"flag"
 	"testing"
 	"time"
+
+	"balance/internal/utils"
+)
+
+var (
+	// Fix of problem "flag provided but not defined: -debug" when running tests with "-args -debug"
+	_ = flag.Bool("debug", false, "run service in debug mode (with .env.debug)")
 )
 
 func TestClient(t *testing.T) {
 	logger := NewForTest()
 	message := "an example warning message"
-	now := time.Now()
+	now := utils.Now()
 	logger.WithTime(now).Warning(message)
 
 	out, ok := logger.Out.(TestOutput)

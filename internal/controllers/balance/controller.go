@@ -6,7 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"gopkg.in/alexcesaro/statsd.v2"
 
 	"balance/internal/controllers"
 	"balance/internal/exchangerates"
@@ -14,7 +13,7 @@ import (
 	"balance/internal/services/core"
 )
 
-func Controller(coreService *core.Service, stats *statsd.Client) gin.HandlerFunc {
+func Controller(coreService *core.Service, stats metrics.Client) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		defer stats.NewTiming().Send(metrics.ControllersBalanceTiming)
 		stats.Increment(metrics.ControllersBalanceCount)

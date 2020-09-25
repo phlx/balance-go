@@ -6,8 +6,6 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
-
-	"balance/internal/config"
 )
 
 type redisClient struct {
@@ -22,9 +20,9 @@ func (rc redisClient) Set(ctx context.Context, key string, value interface{}, ex
 	return rc.internalClient.Set(ctx, key, value, expiration).Err()
 }
 
-func New(ctx context.Context, cfg *config.Config) (Client, error) {
+func New(ctx context.Context, addr string) (Client, error) {
 	client := redis.NewClient(&redis.Options{
-		Addr: cfg.RedisAddress,
+		Addr: addr,
 	})
 
 	_, err := client.Ping(ctx).Result()

@@ -3,16 +3,15 @@ package transactions
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"gopkg.in/alexcesaro/statsd.v2"
 
 	"balance/internal/controllers"
 	"balance/internal/metrics"
 	"balance/internal/models"
 	"balance/internal/services/core"
+	"balance/internal/utils"
 )
 
 var (
@@ -21,7 +20,7 @@ var (
 	DefaultPage  = 1
 )
 
-func Controller(coreService *core.Service, stats *statsd.Client) gin.HandlerFunc {
+func Controller(coreService *core.Service, stats metrics.Client) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		defer stats.NewTiming().Send(metrics.ControllersTransactionsTiming)
 		stats.Increment(metrics.ControllersTransactionsCount)
@@ -72,7 +71,7 @@ func mapTransactions(transactions []models.Transaction) []Transaction {
 	for _, tx := range transactions {
 		result = append(result, Transaction{
 			Id:         tx.Id,
-			Time:       tx.CreatedAt.Format(time.RFC3339Nano),
+			Time:       utils.Format(tx.CreatedAt),
 			Amount:     tx.Amount,
 			FromUserId: tx.InitiatorId,
 			Reason:     tx.Reason,

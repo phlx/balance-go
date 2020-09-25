@@ -62,6 +62,7 @@ func order(sort map[string]string) (string, error) {
 		"time":   "created_at",
 		"amount": "amount",
 	}
+
 	directions := []string{
 		"asc",
 		"desc",

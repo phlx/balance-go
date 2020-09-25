@@ -7,6 +7,7 @@ import (
 
 	"balance/internal/models"
 	"balance/internal/postgres"
+	"balance/internal/utils"
 )
 
 func (s *Service) Move(
@@ -57,7 +58,7 @@ func (s *Service) Move(
 			return err
 		}
 
-		balanceTo.UpdatedAt = time.Now()
+		balanceTo.UpdatedAt = utils.Now()
 		balanceTo.UserId = toUserID
 		if err == pg.ErrNoRows {
 			balanceTo.Balance = round(amount)
@@ -79,7 +80,7 @@ func (s *Service) Move(
 
 		time.Sleep(time.Duration(sleep) * time.Millisecond) // For testing concurrent
 
-		balanceFrom.UpdatedAt = time.Now()
+		balanceFrom.UpdatedAt = utils.Now()
 		balanceFrom.UserId = fromUserID
 		balanceFrom.Balance = sub(balanceFrom.Balance, amount)
 		_, err = tx.Model(balanceFrom).
@@ -96,7 +97,7 @@ func (s *Service) Move(
 		transactionFrom.Amount = -round(amount)
 		transactionFrom.InitiatorId = &toUserID
 		transactionFrom.Reason = reason
-		transactionFrom.CreatedAt = time.Now()
+		transactionFrom.CreatedAt = utils.Now()
 
 		_, err = tx.Model(transactionFrom).Insert()
 		if err != nil {
@@ -108,7 +109,7 @@ func (s *Service) Move(
 		transactionTo.Amount = round(amount)
 		transactionTo.InitiatorId = &fromUserID
 		transactionTo.Reason = reason
-		transactionTo.CreatedAt = time.Now()
+		transactionTo.CreatedAt = utils.Now()
 
 		_, err = tx.Model(transactionTo).Insert()
 		if err != nil {

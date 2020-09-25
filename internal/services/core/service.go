@@ -5,18 +5,18 @@ import (
 
 	"github.com/go-pg/pg/v10"
 	"github.com/sirupsen/logrus"
-	"gopkg.in/alexcesaro/statsd.v2"
 
 	"balance/internal/exchangerates"
+	"balance/internal/metrics"
 	"balance/internal/redis"
 )
 
 type Service struct {
 	context              context.Context
 	redis                redis.Client
+	stats                metrics.Client
 	postgres             *pg.DB
 	logger               *logrus.Logger
-	stats                *statsd.Client
 	exchangeRatesService *exchangerates.Service
 }
 
@@ -25,7 +25,7 @@ func New(
 	redis redis.Client,
 	postgres *pg.DB,
 	logger *logrus.Logger,
-	stats *statsd.Client,
+	stats metrics.Client,
 	exchangeRatesService *exchangerates.Service,
 ) *Service {
 	return &Service{

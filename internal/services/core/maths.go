@@ -19,7 +19,7 @@ func sub(a, b float64) float64 {
 	return result
 }
 
-func div(a, b float64) float64 {
-	result, _ := decimal.NewFromFloat(a).Div(decimal.NewFromFloat(b)).Round(2).Float64()
+func mul(a, b float64) float64 {
+	result, _ := decimal.NewFromFloat(a).Mul(decimal.NewFromFloat(b)).Round(2).Float64()
 	return result
 }

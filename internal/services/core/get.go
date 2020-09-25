@@ -21,7 +21,7 @@ func (s *Service) Get(UserID int64, currency exchangerates.Currency) (float64, e
 		return 0, errors.Wrap(err, "failed to get rate for currency")
 	}
 
-	multiplied := div(balance.Balance, rate)
+	multiplied := mul(balance.Balance, rate)
 
 	return round(multiplied), nil
 }
@@ -31,7 +31,7 @@ func (s *Service) getRate(currency exchangerates.Currency) (float64, error) {
 	var err error
 
 	if currency != exchangerates.RUB {
-		rate, err = s.exchangeRatesService.GetRate(s.context, currency, exchangerates.RUB)
+		rate, err = s.exchangeRatesService.GetRate(s.context, currency)
 		if err != nil {
 			return 0, err
 		}

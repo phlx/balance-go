@@ -573,7 +573,7 @@
                 },
                 "time": {
                   "type": "string",
-                  "example": "2020-09-22T01:25:26.642717Z"
+                  "example": "2020-09-22T01:25:26.642"
                 },
                 "amount": {
                   "type": "number",
@@ -608,7 +608,7 @@
           },
           "time": {
             "type": "string",
-            "example": "2020-09-22T04:22:15.6995115+03:00"
+            "example": "2020-09-22T04:22:15.699"
           }
         }
       },
@@ -643,7 +643,7 @@
           },
           "time": {
             "type": "string",
-            "example": "2020-09-22T04:22:15.6995115+03:00"
+            "example": "2020-09-22T04:22:15.699"
           }
         }
       },
@@ -678,7 +678,7 @@
           },
           "transaction_from_time": {
             "type": "string",
-            "example": "2020-09-22T04:22:15.6995115+03:00"
+            "example": "2020-09-22T04:22:15.699"
           },
           "transaction_to_id": {
             "type": "integer",
@@ -687,7 +687,7 @@
           },
           "transaction_to_time": {
             "type": "string",
-            "example": "2020-09-22T04:22:15.9665115+03:00"
+            "example": "2020-09-22T04:22:15.966"
           }
         }
       },
@@ -825,7 +825,7 @@
           "postgres": true,
           "redis": true,
           "errors": [],
-          "time": "2020-09-22T04:18:48.4284748+03:00",
+          "time": "2020-09-22T04:18:48.428",
           "latency_ms": 6
         }
       },
@@ -837,7 +837,7 @@
           "errors": [
             "dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it."
           ],
-          "time": "2020-09-22T18:05:36.7023982+03:00",
+          "time": "2020-09-22T18:05:36.702",
           "latency_ms": 2341
         }
       },
@@ -854,105 +854,105 @@
           "transactions": [
             {
               "id": 99,
-              "time": "2020-09-22T01:25:26.642717Z",
+              "time": "2020-09-22T01:25:26.642",
               "amount": -0.36,
               "from_user_id": 2,
               "reason": "Move it"
             },
             {
               "id": 97,
-              "time": "2020-09-22T01:24:43.077648Z",
+              "time": "2020-09-22T01:24:43.077",
               "amount": -0.36,
               "from_user_id": 2,
               "reason": "Move it"
             },
             {
               "id": 96,
-              "time": "2020-09-22T01:23:57.073696Z",
+              "time": "2020-09-22T01:23:57.073",
               "amount": -1,
               "from_user_id": null,
               "reason": "I'll take it"
             },
             {
               "id": 95,
-              "time": "2020-09-22T01:23:22.703813Z",
+              "time": "2020-09-22T01:23:22.703",
               "amount": -0.12,
               "from_user_id": null,
               "reason": "I'll take it"
             },
             {
               "id": 94,
-              "time": "2020-09-22T01:23:11.275153Z",
+              "time": "2020-09-22T01:23:11.275",
               "amount": 0.12,
               "from_user_id": null,
               "reason": "Nothing personal"
             },
             {
               "id": 93,
-              "time": "2020-09-22T01:22:15.699512Z",
+              "time": "2020-09-22T01:22:15.699",
               "amount": 0.12,
               "from_user_id": null,
               "reason": "Nothing personal"
             },
             {
               "id": 32,
-              "time": "2020-09-21T23:03:14.077005Z",
+              "time": "2020-09-21T23:03:14.077",
               "amount": -0.12,
               "from_user_id": null,
               "reason": "potracheno"
             },
             {
               "id": 30,
-              "time": "2020-09-21T22:54:12.532842Z",
+              "time": "2020-09-21T22:54:12.532",
               "amount": -0.12,
               "from_user_id": 2,
               "reason": "Move it"
             },
             {
               "id": 29,
-              "time": "2020-09-21T22:53:53.279345Z",
+              "time": "2020-09-21T22:53:53.279",
               "amount": -0.12,
               "from_user_id": null,
               "reason": "I'll take it"
             },
             {
               "id": 28,
-              "time": "2020-09-21T22:53:44.529056Z",
+              "time": "2020-09-21T22:53:44.529",
               "amount": -0.12,
               "from_user_id": null,
               "reason": "I'll take it"
             },
             {
               "id": 27,
-              "time": "2020-09-21T22:53:30.275638Z",
+              "time": "2020-09-21T22:53:30.275",
               "amount": 0.12,
               "from_user_id": null,
               "reason": "Nothing personal"
             },
             {
               "id": 26,
-              "time": "2020-09-21T22:26:14.124184Z",
+              "time": "2020-09-21T22:26:14.124",
               "amount": -0.12,
               "from_user_id": null,
               "reason": "I'll take it"
             },
             {
               "id": 25,
-              "time": "2020-09-20T14:48:42.49364Z",
+              "time": "2020-09-20T14:48:42.493",
               "amount": -0.12,
               "from_user_id": null,
               "reason": "I'll take it"
             },
             {
               "id": 24,
-              "time": "2020-09-20T14:46:42.272622Z",
+              "time": "2020-09-20T14:46:42.272",
               "amount": 0.12,
               "from_user_id": null,
               "reason": "Nothing personal"
             },
             {
               "id": 22,
-              "time": "2020-09-20T10:47:41.205058Z",
+              "time": "2020-09-20T10:47:41.205",
               "amount": -0.12,
               "from_user_id": 2,
               "reason": "Move it"
@@ -980,7 +980,7 @@
         "description": "Success transaction for give",
         "value": {
           "transaction": 93,
-          "time": "2020-09-22T04:22:15.6995115+03:00"
+          "time": "2020-09-22T04:22:15.699"
         }
       },
       "v1.take.request.hundred": {
@@ -995,7 +995,7 @@
         "description": "Success transaction for take",
         "value": {
           "transaction": 94,
-          "time": "2020-09-22T04:23:16.4425115+03:00"
+          "time": "2020-09-22T04:23:16.442"
         }
       },
       "v1.move.request.hundred": {
@@ -1011,9 +1011,9 @@
         "description": "Success transaction for move",
         "value": {
           "transaction_from_id": 97,
-          "transaction_from_time": "2020-09-22T04:24:43.0776483+03:00",
+          "transaction_from_time": "2020-09-22T04:24:43.077",
           "transaction_to_id": 98,
-          "transaction_to_time": "2020-09-22T04:24:43.0786524+03:00"
+          "transaction_to_time": "2020-09-22T04:24:43.078"
         }
       }
     }
