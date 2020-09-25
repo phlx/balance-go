@@ -1,10 +1,19 @@
+# github.com/ajg/form v1.5.1
+github.com/ajg/form
 # github.com/caarlos0/env/v6 v6.3.0
 ## explicit
 github.com/caarlos0/env/v6
 # github.com/cespare/xxhash/v2 v2.1.1
 github.com/cespare/xxhash/v2
+# github.com/davecgh/go-spew v1.1.1
+github.com/davecgh/go-spew/spew
 # github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f
 github.com/dgryski/go-rendezvous
+# github.com/fatih/structs v1.0.0
+github.com/fatih/structs
+# github.com/gavv/httpexpect/v2 v2.1.0
+## explicit
+github.com/gavv/httpexpect/v2
 # github.com/gin-contrib/cors v1.3.1
 ## explicit
 github.com/gin-contrib/cors
@@ -46,6 +55,15 @@ github.com/go-redis/redis/v8/internal/proto
 github.com/go-redis/redis/v8/internal/util
 # github.com/golang/protobuf v1.4.2
 github.com/golang/protobuf/proto
+# github.com/google/go-querystring v1.0.0
+github.com/google/go-querystring/query
+# github.com/google/uuid v1.1.2
+## explicit
+github.com/google/uuid
+# github.com/gorilla/websocket v1.0.0
+github.com/gorilla/websocket
+# github.com/imkira/go-interpol v1.0.0
+github.com/imkira/go-interpol
 # github.com/jinzhu/inflection v1.0.0
 github.com/jinzhu/inflection
 # github.com/joho/godotenv v1.3.0
@@ -54,6 +72,12 @@ github.com/joho/godotenv
 # github.com/json-iterator/go v1.1.10
 ## explicit
 github.com/json-iterator/go
+# github.com/klauspost/compress v1.8.2
+github.com/klauspost/compress/flate
+github.com/klauspost/compress/gzip
+github.com/klauspost/compress/zlib
+# github.com/klauspost/cpuid v1.2.1
+github.com/klauspost/cpuid
 # github.com/konsorten/go-windows-terminal-sequences v1.0.3
 github.com/konsorten/go-windows-terminal-sequences
 # github.com/leodido/go-urn v1.2.0
@@ -69,16 +93,30 @@ github.com/modern-go/reflect2
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
+# github.com/sergi/go-diff v1.0.0
+github.com/sergi/go-diff/diffmatchpatch
 # github.com/shopspring/decimal v1.2.0
 ## explicit
 github.com/shopspring/decimal
 # github.com/sirupsen/logrus v1.6.0
 ## explicit
 github.com/sirupsen/logrus
+# github.com/stretchr/testify v1.6.1
+## explicit
+github.com/stretchr/testify/assert
+github.com/stretchr/testify/require
 # github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc
 github.com/tmthrgd/go-hex
 # github.com/ugorji/go/codec v1.1.7
 github.com/ugorji/go/codec
+# github.com/valyala/bytebufferpool v1.0.0
+github.com/valyala/bytebufferpool
+# github.com/valyala/fasthttp v1.9.0
+github.com/valyala/fasthttp
+github.com/valyala/fasthttp/fasthttputil
+github.com/valyala/fasthttp/stackless
 # github.com/vmihailenco/bufpool v0.1.11
 github.com/vmihailenco/bufpool
 # github.com/vmihailenco/msgpack/v5 v5.0.0-beta.1
@@ -88,6 +126,19 @@ github.com/vmihailenco/msgpack/v5/codes
 github.com/vmihailenco/tagparser
 github.com/vmihailenco/tagparser/internal
 github.com/vmihailenco/tagparser/internal/parser
+# github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f
+github.com/xeipuuv/gojsonpointer
+# github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415
+github.com/xeipuuv/gojsonreference
+# github.com/xeipuuv/gojsonschema v1.1.0
+github.com/xeipuuv/gojsonschema
+# github.com/yalp/jsonpath v0.0.0-20180802001716-5cc68e5049a0
+github.com/yalp/jsonpath
+# github.com/yudai/gojsondiff v1.0.0
+github.com/yudai/gojsondiff
+github.com/yudai/gojsondiff/formatter
+# github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82
+github.com/yudai/golcs
 # go.opentelemetry.io/otel v0.11.0
 go.opentelemetry.io/otel
 go.opentelemetry.io/otel/api/correlation
@@ -107,6 +158,7 @@ golang.org/x/crypto/pbkdf2
 golang.org/x/exp/rand
 # golang.org/x/net v0.0.0-20200904194848-62affa334b73
 golang.org/x/net/context
+golang.org/x/net/publicsuffix
 # golang.org/x/sys v0.0.0-20200908134130-d2e65c121b96
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
@@ -155,5 +207,9 @@ google.golang.org/protobuf/runtime/protoimpl
 gopkg.in/alexcesaro/statsd.v2
 # gopkg.in/yaml.v2 v2.3.0
 gopkg.in/yaml.v2
+# gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
+gopkg.in/yaml.v3
 # mellium.im/sasl v0.2.1
 mellium.im/sasl
+# moul.io/http2curl v1.0.1-0.20190925090545-5cd742060b0e
+moul.io/http2curl
