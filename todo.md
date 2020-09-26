@@ -1,0 +1,6 @@
+- [+] Swagger
+- [_] Unit test
+- [_] Functional tests
+- [+] Statsd metrics in code
+- [_] Grafana loaded config
+- [+] Documentation
