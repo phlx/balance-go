@@ -7,22 +7,20 @@ import (
 	"io/ioutil"
 	"mime"
 	"net/url"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	goredis "github.com/go-redis/redis/v8"
+	"github.com/go-pg/pg/v10"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 
-	"balance/internal/redis"
+	"balance/internal/models"
+	"balance/internal/pkg/time"
 )
 
 const (
 	IdempotencyKeyInHeader = "X-Idempotency-Key"
 	IdempotencyKeyInQuery  = "idempotency_key"
 	IdempotencyKeyInBody   = "idempotency_key"
-	StorageKeyPrefix       = "idempotence:"
-	StorageKeyExpiration   = 60 * time.Minute
 )
 
 type response struct {
@@ -37,30 +35,35 @@ type cachedResponseWriter struct {
 }
 
 type storage struct {
-	client redis.Client
-	ctx    context.Context
-	log    *logrus.Logger
+	ctx      context.Context
+	log      *logrus.Logger
+	postgres *pg.DB
 }
 
-func (s storage) loadResponse(key string) (*response, error) {
-	result, err := s.client.Get(s.ctx, StorageKeyPrefix+key)
+func (s storage) loadResponse(idempotencyKey string) (*response, error) {
+	model := &models.Response{IdempotencyKey: idempotencyKey}
+	err := s.postgres.Model(model).WherePK().Select()
 	if err != nil {
 		return nil, err
 	}
-	var r *response
-	err = json.Unmarshal([]byte(result), &r)
-	if err != nil {
-		return nil, errors.Wrapf(err, "Unable to unmarshal JSON from string '%s'", result)
-	}
-	return r, nil
+	return &response{
+		Status:  model.Status,
+		Data:    model.Response,
+		Headers: model.Headers,
+	}, nil
 }
 
 func (s storage) saveResponse(key string, r *response) error {
-	result, err := json.Marshal(r)
-	if err != nil {
-		return err
+	model := &models.Response{
+		IdempotencyKey: key,
+		Status:         r.Status,
+		Headers:        r.Headers,
+		Response:       r.Data,
+		CreatedAt:      time.Now(),
 	}
-	return s.client.Set(s.ctx, StorageKeyPrefix+key, result, StorageKeyExpiration)
+
+	_, err := s.postgres.Model(model).Insert()
+	return err
 }
 
 func (crw cachedResponseWriter) Write(bytes []byte) (int, error) {
@@ -68,11 +71,11 @@ func (crw cachedResponseWriter) Write(bytes []byte) (int, error) {
 	return crw.ResponseWriter.Write(bytes)
 }
 
-func Idempotency(ctx context.Context, client redis.Client, log *logrus.Logger) gin.HandlerFunc {
+func Idempotency(ctx context.Context, postgres *pg.DB, log *logrus.Logger) gin.HandlerFunc {
 	s := storage{
-		client: client,
-		log:    log,
-		ctx:    ctx,
+		postgres: postgres,
+		log:      log,
+		ctx:      ctx,
 	}
 
 	return func(context *gin.Context) {
@@ -101,7 +104,7 @@ func Idempotency(ctx context.Context, client redis.Client, log *logrus.Logger) g
 		}
 
 		resp, err := s.loadResponse(key)
-		if err != nil && err != goredis.Nil {
+		if err != nil && err != pg.ErrNoRows {
 			s.log.Warning(errors.Wrap(err, "Unable to load response from storage"))
 		}
 		if resp != nil {
@@ -128,7 +131,7 @@ func Idempotency(ctx context.Context, client redis.Client, log *logrus.Logger) g
 		resp, err = makeResponseFromContext(context)
 		if err != nil {
 			log.Warning(errors.Wrap(err, "Unable to make response from context"))
-		} else {
+		} else if resp.Status < 400 {
 			err := s.saveResponse(key, resp)
 			if err != nil {
 				log.Warning(errors.Wrap(err, "Unable to save response"))

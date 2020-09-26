@@ -1,4 +1,4 @@
-package utils
+package time
 
 import (
 	"log"
@@ -13,7 +13,7 @@ func Location() *time.Location {
 	location, err := time.LoadLocation(times.TimeZone)
 	if err != nil {
 		err = errors.Wrapf(err, "unable to load location with timezone %s", times.TimeZone)
-		log.Fatal()
+		log.Fatal(err)
 	}
 	return location
 }

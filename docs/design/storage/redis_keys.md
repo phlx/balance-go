@@ -1,13 +1,3 @@
-idempotence: saved responses for idempotency keys
-example:
-
-    key:    idempotence:56d6a679-d4d0-4c8a-bfde-6c620928bb96
-    value:  {
-        "status": 200,
-        "headers": {"content-type":"application/json"},
-        "response": {"balance":123.45}
-    }
-
 currencies: saved currencies by dates
 example:
 

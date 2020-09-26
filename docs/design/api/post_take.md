@@ -9,7 +9,7 @@ response
     200 OK
     {
         "transaction": 25,
-        "time": "2020-09-20T17:48:42.4936404+03:00"
+        "time": "2020-09-20T17:48:42.493"
     }
     
     400 Bad Request

@@ -15,9 +15,9 @@ response
     200 OK
     {
         "transaction_from_id": 22,
-        "transaction_from_time": "2020-09-20T13:47:41.2050577+03:00",
+        "transaction_from_time": "2020-09-20T13:47:41.205",
         "transaction_to_id": 23,
-        "transaction_to_time": "2020-09-20T13:47:41.2060457+03:00"
+        "transaction_to_time": "2020-09-20T13:47:41.206"
     }
 
     400 Bad Request

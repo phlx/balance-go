@@ -11,14 +11,14 @@ func TestTakeWithInitiator(t *testing.T) {
 	userID := int64(1)
 	initiatorID := int64(2)
 
-	test := &test{carcass: functional.NewCarcass(t)}
-	test.carcass.ResetModels(userID)
+	carcass := functional.NewCarcass(t)
+	carcass.ResetModels(userID)
 
-	test.carcass.API.GiveExpect(userID, 100, nil, "").Status(http.StatusOK)
+	carcass.API.GiveExpect(userID, 100, nil, "").Status(http.StatusOK)
 
-	test.carcass.API.TakeExpect(userID, 100, &initiatorID, "").Status(http.StatusOK)
+	carcass.API.TakeExpect(userID, 100, &initiatorID, "").Status(http.StatusOK)
 
-	test.carcass.API.TransactionsExpect(userID).
+	carcass.API.TransactionsExpect(userID).
 		Status(http.StatusOK).
 		JSON().
 		Object().
@@ -28,5 +28,5 @@ func TestTakeWithInitiator(t *testing.T) {
 		Object().
 		ValueEqual("from_user_id", initiatorID)
 
-	test.carcass.ResetModels(userID)
+	carcass.ResetModels(userID)
 }

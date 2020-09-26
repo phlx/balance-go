@@ -1,4 +1,4 @@
-package controllers
+package handlers
 
 const (
 	ErrorCodeInternal          = "internal_error"

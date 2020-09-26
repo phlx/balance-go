@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 
-	"balance/internal/utils"
+	time2 "balance/internal/pkg/time"
 )
 
 var (
@@ -27,7 +27,7 @@ func Logger(logger logrus.FieldLogger, notLogged ...string) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		path := c.Request.URL.Path
-		start := utils.Now()
+		start := time2.Now()
 		c.Next()
 		stop := time.Since(start)
 		latency := int(math.Ceil(float64(stop.Nanoseconds()) / 1000000.0))
@@ -62,7 +62,7 @@ func Logger(logger logrus.FieldLogger, notLogged ...string) gin.HandlerFunc {
 			msg := fmt.Sprintf("%s - %s [%s] \"%s %s\" %d %d \"%s\" \"%s\" (%dms)",
 				clientIP,
 				hostname,
-				utils.Now().Format(timeFormat),
+				time2.Now().Format(timeFormat),
 				c.Request.Method,
 				path,
 				statusCode,

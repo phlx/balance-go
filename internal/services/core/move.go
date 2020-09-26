@@ -4,10 +4,11 @@ import (
 	"time"
 
 	"github.com/go-pg/pg/v10"
+	"github.com/pkg/errors"
 
 	"balance/internal/models"
+	time2 "balance/internal/pkg/time"
 	"balance/internal/postgres"
-	"balance/internal/utils"
 )
 
 func (s *Service) Move(
@@ -19,6 +20,7 @@ func (s *Service) Move(
 ) (*models.Transaction, *models.Transaction, error) {
 	balanceFrom := new(models.Balance)
 	balanceTo := new(models.Balance)
+	balances := make([]models.Balance, 0)
 	transactionFrom := new(models.Transaction)
 	transactionTo := new(models.Transaction)
 
@@ -30,46 +32,60 @@ func (s *Service) Move(
 			return err
 		}
 
-		err = tx.Model(balanceFrom).
-			Where("user_id = ?", fromUserID).
+		err = tx.Model(&balances).
+			WhereOr("user_id = ?", fromUserID).
+			WhereOr("user_id = ?", toUserID).
 			For("UPDATE").
 			Select()
 
-		if err != nil && err != pg.ErrNoRows {
+		if err != nil {
 			s.logger.WithContext(s.context).WithField("from_user_id", fromUserID).Error(err)
 			return err
 		}
 
-		if err == pg.ErrNoRows {
+		if len(balances) == 0 || len(balances) == 1 && balances[0].UserId != fromUserID {
 			return ErrorUserNotFound
+		}
+
+		if len(balances) > 2 {
+			err = errors.Errorf("Queried balances for move must be length of 2, %d given", len(balances))
+			s.logger.WithContext(s.context).
+				WithField("from_user_id", fromUserID).
+				WithField("to_user_id", toUserID).
+				WithField("balances", balances).
+				Error(err)
+			return err
+		}
+
+		if len(balances) > 1 {
+			if fromUserID == balances[0].UserId {
+				balanceFrom = &balances[0]
+				balanceTo = &balances[1]
+			} else {
+				balanceFrom = &balances[1]
+				balanceTo = &balances[0]
+			}
+		} else {
+			balanceFrom = &balances[0]
 		}
 
 		if sub(balanceFrom.Balance, amount) < 0 {
 			return ErrorInsufficientFunds
 		}
 
-		err = tx.Model(balanceTo).
-			Where("user_id = ?", toUserID).
-			For("UPDATE").
-			Select()
-
-		if err != nil && err != pg.ErrNoRows {
-			s.logger.WithContext(s.context).WithField("from_user_id", fromUserID).Error(err)
-			return err
-		}
-
-		balanceTo.UpdatedAt = utils.Now()
-		balanceTo.UserId = toUserID
-		if err == pg.ErrNoRows {
+		balanceTo.UpdatedAt = time2.Now()
+		if balanceTo.UserId == 0 {
+			balanceTo.UserId = toUserID
 			balanceTo.Balance = round(amount)
 
 			_, err = tx.Model(balanceTo).Insert()
 		} else {
+			balanceTo.UserId = toUserID
 			balanceTo.Balance = add(balanceTo.Balance, amount)
 
 			_, err = tx.Model(balanceTo).
 				Set("balance = ?balance").
-				Where("id = ?id").
+				Where("user_id = ?user_id").
 				Update()
 		}
 
@@ -80,12 +96,12 @@ func (s *Service) Move(
 
 		time.Sleep(time.Duration(sleep) * time.Millisecond) // For testing concurrent
 
-		balanceFrom.UpdatedAt = utils.Now()
+		balanceFrom.UpdatedAt = time2.Now()
 		balanceFrom.UserId = fromUserID
 		balanceFrom.Balance = sub(balanceFrom.Balance, amount)
 		_, err = tx.Model(balanceFrom).
 			Set("balance = ?balance").
-			Where("id = ?id").
+			Where("user_id = ?user_id").
 			Update()
 
 		if err != nil {
@@ -97,7 +113,7 @@ func (s *Service) Move(
 		transactionFrom.Amount = -round(amount)
 		transactionFrom.InitiatorId = &toUserID
 		transactionFrom.Reason = reason
-		transactionFrom.CreatedAt = utils.Now()
+		transactionFrom.CreatedAt = time2.Now()
 
 		_, err = tx.Model(transactionFrom).Insert()
 		if err != nil {
@@ -109,7 +125,7 @@ func (s *Service) Move(
 		transactionTo.Amount = round(amount)
 		transactionTo.InitiatorId = &fromUserID
 		transactionTo.Reason = reason
-		transactionTo.CreatedAt = utils.Now()
+		transactionTo.CreatedAt = time2.Now()
 
 		_, err = tx.Model(transactionTo).Insert()
 		if err != nil {

@@ -12,20 +12,20 @@ import (
 func TestMoveMethodIsIdempotent(t *testing.T) {
 	fromUserID := int64(1)
 	toUserID := int64(2)
-	test := &test{carcass: functional.NewCarcass(t)}
-	test.carcass.ResetModels(fromUserID)
-	test.carcass.ResetModels(toUserID)
+	carcass := functional.NewCarcass(t)
+	carcass.ResetModels(fromUserID)
+	carcass.ResetModels(toUserID)
 	amountStarted := 789.0
 	amountMoved := 321.0
 	amountExpected := 468.0
 
-	test.carcass.API.GiveExpect(fromUserID, amountStarted, nil, "").
+	carcass.API.GiveExpect(fromUserID, amountStarted, nil, "").
 		Status(http.StatusOK).
 		JSON().
 		Object()
 
 	idempotencyKey := uuid.New().String()
-	moved := test.carcass.API.MoveWithIdempotencyKeyExpect(idempotencyKey, fromUserID, toUserID, amountMoved, "").
+	moved := carcass.API.MoveWithIdempotencyKeyExpect(idempotencyKey, fromUserID, toUserID, amountMoved, "").
 		Status(http.StatusOK).
 		JSON().
 		Object()
@@ -36,7 +36,7 @@ func TestMoveMethodIsIdempotent(t *testing.T) {
 	timeTo := moved.Value("transaction_to_time").String().Raw()
 
 	for attempts := 0; attempts < 5; attempts++ {
-		test.carcass.API.MoveWithIdempotencyKeyExpect(idempotencyKey, fromUserID, toUserID, amountMoved, "").
+		carcass.API.MoveWithIdempotencyKeyExpect(idempotencyKey, fromUserID, toUserID, amountMoved, "").
 			Status(http.StatusOK).
 			JSON().
 			Object().
@@ -46,13 +46,13 @@ func TestMoveMethodIsIdempotent(t *testing.T) {
 			ValueEqual("transaction_to_time", timeTo)
 	}
 
-	test.carcass.API.BalanceExpect(fromUserID).
+	carcass.API.BalanceExpect(fromUserID).
 		Status(http.StatusOK).
 		JSON().
 		Object().
 		ValueEqual("balance", amountExpected)
 
-	transactionsFrom := test.carcass.API.TransactionsExpect(fromUserID).
+	transactionsFrom := carcass.API.TransactionsExpect(fromUserID).
 		Status(http.StatusOK).
 		JSON().
 		Object().
@@ -68,7 +68,7 @@ func TestMoveMethodIsIdempotent(t *testing.T) {
 
 	transactionsFrom.Last().Object().ValueEqual("amount", amountStarted)
 
-	transactionsTo := test.carcass.API.TransactionsExpect(toUserID).
+	transactionsTo := carcass.API.TransactionsExpect(toUserID).
 		Status(http.StatusOK).
 		JSON().
 		Object().
@@ -82,6 +82,6 @@ func TestMoveMethodIsIdempotent(t *testing.T) {
 		ValueEqual("amount", amountMoved).
 		ValueEqual("time", timeTo)
 
-	test.carcass.ResetModels(fromUserID)
-	test.carcass.ResetModels(toUserID)
+	carcass.ResetModels(fromUserID)
+	carcass.ResetModels(toUserID)
 }

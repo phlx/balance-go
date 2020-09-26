@@ -10,8 +10,8 @@ import (
 	goredis "github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
 
+	time2 "balance/internal/pkg/time"
 	"balance/internal/redis"
-	"balance/internal/utils"
 )
 
 type Currency string
@@ -148,7 +148,7 @@ func (s *Service) SetCachedRates(ctx context.Context, rates map[Currency]float64
 }
 
 func currentDate() string {
-	return utils.Now().Format("2006-01-02")
+	return time2.Now().Format("2006-01-02")
 }
 
 func getRedisKey() string {

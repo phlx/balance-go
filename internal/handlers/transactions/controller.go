@@ -7,11 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 
-	"balance/internal/controllers"
+	"balance/internal/handlers"
 	"balance/internal/metrics"
 	"balance/internal/models"
+	"balance/internal/pkg/time"
 	"balance/internal/services/core"
-	"balance/internal/utils"
 )
 
 var (
@@ -26,7 +26,7 @@ func Controller(coreService *core.Service, stats metrics.Client) gin.HandlerFunc
 		stats.Increment(metrics.ControllersTransactionsCount)
 
 		var in Request
-		if err := controllers.Validate(context, &in, binding.Query); err != nil {
+		if err := handlers.Validate(context, &in, binding.Query); err != nil {
 			context.JSON(http.StatusBadRequest, err.Response)
 			return
 		}
@@ -34,8 +34,8 @@ func Controller(coreService *core.Service, stats metrics.Client) gin.HandlerFunc
 		transactions, pages, err := coreService.List(in.UserID, sort(in), limit(in), page(in))
 
 		if err == core.ErrorUserNotFound {
-			context.JSON(http.StatusBadRequest, controllers.ErrorBadRequest(
-				controllers.ErrorCodeBalanceNotFound,
+			context.JSON(http.StatusBadRequest, handlers.ErrorBadRequest(
+				handlers.ErrorCodeBalanceNotFound,
 				fmt.Sprintf("Not found balance for user %d", in.UserID),
 			))
 			stats.Increment(metrics.Responses400AllCount)
@@ -43,8 +43,8 @@ func Controller(coreService *core.Service, stats metrics.Client) gin.HandlerFunc
 		}
 
 		if err == core.ErrorInvalidSort {
-			context.JSON(http.StatusBadRequest, controllers.ErrorBadRequest(
-				fmt.Sprintf(controllers.ErrorCodeValidation, "sort"),
+			context.JSON(http.StatusBadRequest, handlers.ErrorBadRequest(
+				fmt.Sprintf(handlers.ErrorCodeValidation, "sort"),
 				"Invalid sort value",
 			))
 			stats.Increment(metrics.Responses400AllCount)
@@ -52,7 +52,7 @@ func Controller(coreService *core.Service, stats metrics.Client) gin.HandlerFunc
 		}
 
 		if err != nil {
-			context.JSON(http.StatusInternalServerError, controllers.ErrorInternal())
+			context.JSON(http.StatusInternalServerError, handlers.ErrorInternal())
 			stats.Increment(metrics.Responses500AllCount)
 			return
 		}
@@ -71,7 +71,7 @@ func mapTransactions(transactions []models.Transaction) []Transaction {
 	for _, tx := range transactions {
 		result = append(result, Transaction{
 			Id:         tx.Id,
-			Time:       utils.Format(tx.CreatedAt),
+			Time:       time.Format(tx.CreatedAt),
 			Amount:     tx.Amount,
 			FromUserId: tx.InitiatorId,
 			Reason:     tx.Reason,

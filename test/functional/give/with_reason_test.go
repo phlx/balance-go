@@ -14,7 +14,7 @@ func TestGiveWithReason(t *testing.T) {
 	amount := 5000.00
 	reason := "Feel free to идти в McDonald's, чувак 🤑"
 
-	test := &test{carcass: functional.NewCarcass(t)}
+	test := &carcassDecorator{carcass: functional.NewCarcass(t)}
 	test.carcass.ResetModels(userID)
 
 	test.carcass.API.GiveExpect(userID, amount, nil, reason).Status(http.StatusOK)

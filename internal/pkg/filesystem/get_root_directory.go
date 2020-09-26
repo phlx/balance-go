@@ -1,4 +1,4 @@
-package utils
+package filesystem
 
 import (
 	"errors"
@@ -16,7 +16,7 @@ func GetRootDirectory() (string, error) {
 
 	dir := filepath.Dir(file)
 
-	parentDirectories := 2
+	parentDirectories := 3
 	sep := string(os.PathSeparator)
 
 	splits := strings.Split(dir, sep)

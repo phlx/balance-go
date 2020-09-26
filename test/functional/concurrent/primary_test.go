@@ -8,9 +8,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
-	"balance/internal/controllers"
-	"balance/internal/controllers/take"
 	"balance/internal/exchangerates"
+	"balance/internal/handlers"
+	"balance/internal/handlers/take"
 	"balance/internal/middlewares"
 	"balance/test/functional"
 )
@@ -55,7 +55,7 @@ func TestConcurrent(t *testing.T) {
 				Array().
 				First().
 				Object().
-				ValueEqual("code", controllers.ErrorCodeInsufficientFunds)
+				ValueEqual("code", handlers.ErrorCodeInsufficientFunds)
 		}
 	}
 

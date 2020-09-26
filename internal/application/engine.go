@@ -6,14 +6,14 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"balance/internal/container"
-	"balance/internal/controllers/balance"
-	"balance/internal/controllers/give"
-	"balance/internal/controllers/health"
-	"balance/internal/controllers/move"
-	"balance/internal/controllers/root"
-	"balance/internal/controllers/take"
-	"balance/internal/controllers/transactions"
 	"balance/internal/exchangerates"
+	"balance/internal/handlers/balance"
+	"balance/internal/handlers/give"
+	"balance/internal/handlers/health"
+	"balance/internal/handlers/move"
+	"balance/internal/handlers/root"
+	"balance/internal/handlers/take"
+	"balance/internal/handlers/transactions"
 	"balance/internal/middlewares"
 	"balance/internal/postgres"
 	"balance/internal/services/core"
@@ -34,7 +34,7 @@ func Engine(ctx context.Context, debug, test bool) *Application {
 	router := gin.New()
 	router.Use(middlewares.Logger(deps.Logger), gin.Recovery())
 	router.Use(middlewares.Cors())
-	router.Use(middlewares.Idempotency(ctx, deps.Redis, deps.Logger))
+	router.Use(middlewares.Idempotency(ctx, deps.Postgres, deps.Logger))
 
 	validations.RegisterCurrency(deps.Logger)
 

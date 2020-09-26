@@ -7,7 +7,7 @@ import (
 	"github.com/caarlos0/env/v6"
 	"github.com/joho/godotenv"
 
-	"balance/internal/utils"
+	"balance/internal/pkg/filesystem"
 )
 
 func Load(debug bool, test bool) (*Config, error) {
@@ -35,7 +35,7 @@ func Load(debug bool, test bool) (*Config, error) {
 }
 
 func getConfigsDirectory() (string, error) {
-	root, err := utils.GetRootDirectory()
+	root, err := filesystem.GetRootDirectory()
 	if err != nil {
 		return "", err
 	}

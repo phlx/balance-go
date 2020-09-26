@@ -8,11 +8,11 @@ import (
 	"balance/test/functional"
 )
 
-type test struct {
+type carcassDecorator struct { //nolint
 	carcass *functional.Carcass
 }
 
-func (t test) giveMoneyAndCheckAmountInternal(userID int64, originalAmount, expectedAmount float64) {
+func (t carcassDecorator) giveMoneyAndCheckAmountInternal(userID int64, originalAmount, expectedAmount float64) {
 	var err error
 
 	t.carcass.API.GiveExpect(userID, originalAmount, nil, "").Status(http.StatusOK)
@@ -26,7 +26,7 @@ func (t test) giveMoneyAndCheckAmountInternal(userID int64, originalAmount, expe
 	assert.Equal(t.carcass.T, transaction.Amount, expectedAmount)
 }
 
-func (t test) checkGivenMoneyExternal(userID int64, expectedAmount float64) {
+func (t carcassDecorator) checkGivenMoneyExternal(userID int64, expectedAmount float64) {
 	t.carcass.API.BalanceExpect(userID).
 		Status(http.StatusOK).
 		JSON().

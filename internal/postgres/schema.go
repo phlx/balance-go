@@ -11,6 +11,7 @@ func CreateDatabaseSchema(db *pg.DB) error {
 	internalModels := []interface{}{
 		(*models.Balance)(nil),
 		(*models.Transaction)(nil),
+		(*models.Response)(nil),
 	}
 
 	for _, model := range internalModels {

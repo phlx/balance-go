@@ -11,12 +11,12 @@ import (
 
 func TestGiveMethodIsIdempotent(t *testing.T) {
 	userID := int64(1)
-	test := &test{carcass: functional.NewCarcass(t)}
-	test.carcass.ResetModels(userID)
+	carcass := functional.NewCarcass(t)
+	carcass.ResetModels(userID)
 
 	idempotencyKey := uuid.New().String()
 	amount := 753.0
-	given := test.carcass.API.GiveWithIdempotencyKeyExpect(idempotencyKey, userID, amount, nil, "").
+	given := carcass.API.GiveWithIdempotencyKeyExpect(idempotencyKey, userID, amount, nil, "").
 		Status(http.StatusOK).
 		JSON().
 		Object()
@@ -25,7 +25,7 @@ func TestGiveMethodIsIdempotent(t *testing.T) {
 	time := given.Value("time").String().Raw()
 
 	for attempts := 0; attempts < 5; attempts++ {
-		test.carcass.API.GiveWithIdempotencyKeyExpect(idempotencyKey, userID, amount, nil, "").
+		carcass.API.GiveWithIdempotencyKeyExpect(idempotencyKey, userID, amount, nil, "").
 			Status(http.StatusOK).
 			JSON().
 			Object().
@@ -33,13 +33,13 @@ func TestGiveMethodIsIdempotent(t *testing.T) {
 			ValueEqual("time", time)
 	}
 
-	test.carcass.API.BalanceExpect(userID).
+	carcass.API.BalanceExpect(userID).
 		Status(http.StatusOK).
 		JSON().
 		Object().
 		ValueEqual("balance", amount)
 
-	transactions := test.carcass.API.TransactionsExpect(userID).
+	transactions := carcass.API.TransactionsExpect(userID).
 		Status(http.StatusOK).
 		JSON().
 		Object().
@@ -53,5 +53,5 @@ func TestGiveMethodIsIdempotent(t *testing.T) {
 		ValueEqual("amount", amount).
 		ValueEqual("time", time)
 
-	test.carcass.ResetModels(userID)
+	carcass.ResetModels(userID)
 }

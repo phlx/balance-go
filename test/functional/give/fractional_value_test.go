@@ -10,7 +10,7 @@ func TestGiveFractionalValue(t *testing.T) {
 	var originalAmount, expectedAmount float64
 	userID := int64(1)
 
-	test := &test{carcass: functional.NewCarcass(t)}
+	test := &carcassDecorator{carcass: functional.NewCarcass(t)}
 	test.carcass.ResetModels(userID)
 
 	originalAmount = 0.125

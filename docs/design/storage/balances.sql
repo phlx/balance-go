@@ -1,9 +1,8 @@
-CREATE TABLE IF NOT EXISTS "balances"
+create table balances
 (
-    "id"         bigserial,
-    "user_id"    bigint           NOT NULL UNIQUE,
-    "balance"    double precision NOT NULL,
-    "updated_at" timestamptz,
-    PRIMARY KEY ("id"),
-    UNIQUE ("user_id")
+	user_id bigserial not null
+		constraint balances_pkey
+			primary key,
+	balance numeric(20,2) not null,
+	updated_at timestamp with time zone
 );

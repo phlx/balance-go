@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"balance/internal/metrics"
+	"balance/internal/pkg/time"
 	"balance/internal/services/core"
-	"balance/internal/utils"
 )
 
 func Controller(coreService *core.Service, stats metrics.Client) gin.HandlerFunc {
@@ -15,15 +15,15 @@ func Controller(coreService *core.Service, stats metrics.Client) gin.HandlerFunc
 		defer stats.NewTiming().Send(metrics.ControllersHealthTiming)
 		stats.Increment(metrics.ControllersHealthCount)
 
-		before := utils.Now()
+		before := time.Now()
 		health := coreService.Health()
-		after := utils.Now()
+		after := time.Now()
 		duration := after.Sub(before).Milliseconds()
 		response := Response{
 			Postgres: health.Postgres,
 			Redis:    health.Redis,
 			Errors:   health.Errors,
-			Time:     utils.Format(after),
+			Time:     time.Format(after),
 			Latency:  duration,
 		}
 		context.JSON(http.StatusOK, response)

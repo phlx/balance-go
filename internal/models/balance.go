@@ -6,8 +6,7 @@ import (
 
 type Balance struct {
 	tableName struct{} `pg:"balances,alias:b"` //nolint
-	Id        int64
-	UserId    int64   `pg:",notnull,unique"`
-	Balance   float64 `pg:",notnull,use_zero"`
+	UserId    int64    `pg:",pk,notnull,unique"`
+	Balance   float64  `pg:"type:numeric(20,2),notnull,use_zero"`
 	UpdatedAt time.Time
 }

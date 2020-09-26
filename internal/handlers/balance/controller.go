@@ -7,8 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 
-	"balance/internal/controllers"
 	"balance/internal/exchangerates"
+	"balance/internal/handlers"
 	"balance/internal/metrics"
 	"balance/internal/services/core"
 )
@@ -19,7 +19,7 @@ func Controller(coreService *core.Service, stats metrics.Client) gin.HandlerFunc
 		stats.Increment(metrics.ControllersBalanceCount)
 
 		var in Request
-		if err := controllers.Validate(context, &in, binding.Query); err != nil {
+		if err := handlers.Validate(context, &in, binding.Query); err != nil {
 			context.JSON(http.StatusBadRequest, err.Response)
 			stats.Increment(metrics.Responses400AllCount)
 			return
@@ -33,8 +33,8 @@ func Controller(coreService *core.Service, stats metrics.Client) gin.HandlerFunc
 		result, err := coreService.Get(userID, currency)
 
 		if err == core.ErrorUserNotFound {
-			context.JSON(http.StatusBadRequest, controllers.ErrorBadRequest(
-				controllers.ErrorCodeBalanceNotFound,
+			context.JSON(http.StatusBadRequest, handlers.ErrorBadRequest(
+				handlers.ErrorCodeBalanceNotFound,
 				fmt.Sprintf("Not found balance for user %d", in.UserID),
 			))
 			stats.Increment(metrics.Responses400AllCount)
@@ -42,7 +42,7 @@ func Controller(coreService *core.Service, stats metrics.Client) gin.HandlerFunc
 		}
 
 		if err != nil {
-			context.JSON(http.StatusInternalServerError, controllers.ErrorInternal())
+			context.JSON(http.StatusInternalServerError, handlers.ErrorInternal())
 			stats.Increment(metrics.Responses500AllCount)
 			return
 		}

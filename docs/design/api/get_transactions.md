@@ -7,8 +7,8 @@ response
     200 OK
     {
       "transactions": [
-        {id:"5",time:"2020-09-19T02:27:08.5721651+03:00","amount":-5,"from_user_id":null,"reason":"Service charges"},
-        {id:"4",time:"2020-09-19T02:27:08.4821522+03:00","amount":5,"from_user_id":321,"reason":"Owed you"}
+        {id:"5",time:"2020-09-19T02:27:08.572","amount":-5,"from_user_id":null,"reason":"Service charges"},
+        {id:"4",time:"2020-09-19T02:27:08.482","amount":5,"from_user_id":321,"reason":"Owed you"}
       ],
       "pages": 9
     }

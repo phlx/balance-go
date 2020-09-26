@@ -1,4 +1,4 @@
-package controllers
+package handlers
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 
-	"balance/internal/utils"
+	"balance/internal/pkg/strings"
 )
 
 type ValidationErrorWithResponse struct {
@@ -40,7 +40,7 @@ func Validate(context *gin.Context, request interface{}, binding binding.Binding
 		}
 
 		for _, fieldError := range fieldErrors {
-			field := utils.ToSnakeCase(fieldError.Field())
+			field := strings.ToSnakeCase(fieldError.Field())
 			rule := fieldError.Tag()
 
 			errors = append(errors, ErrorResponseItem{

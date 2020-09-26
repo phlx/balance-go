@@ -4,8 +4,8 @@ import (
 	"github.com/go-pg/pg/v10"
 
 	"balance/internal/models"
+	"balance/internal/pkg/time"
 	"balance/internal/postgres"
-	"balance/internal/utils"
 )
 
 func (s *Service) Give(
@@ -35,7 +35,7 @@ func (s *Service) Give(
 			return err
 		}
 
-		balance.UpdatedAt = utils.Now()
+		balance.UpdatedAt = time.Now()
 		if err == pg.ErrNoRows {
 			balance.UserId = userID
 			balance.Balance = round(amount)
@@ -46,7 +46,7 @@ func (s *Service) Give(
 
 			_, err = tx.Model(balance).
 				Set("balance = ?balance").
-				Where("id = ?id").
+				Where("user_id = ?user_id").
 				Update()
 		}
 
@@ -59,7 +59,7 @@ func (s *Service) Give(
 		transaction.Amount = round(amount)
 		transaction.InitiatorId = initiatorID
 		transaction.Reason = reason
-		transaction.CreatedAt = utils.Now()
+		transaction.CreatedAt = time.Now()
 
 		_, err = tx.Model(transaction).Insert()
 		if err != nil {

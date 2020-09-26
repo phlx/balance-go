@@ -12,15 +12,15 @@ func TestMoveWithReason(t *testing.T) {
 	toUserID := int64(2)
 	reason := "Move like Jaeger 🕺"
 
-	test := &test{carcass: functional.NewCarcass(t)}
-	test.carcass.ResetModels(fromUserID)
-	test.carcass.ResetModels(toUserID)
+	carcass := functional.NewCarcass(t)
+	carcass.ResetModels(fromUserID)
+	carcass.ResetModels(toUserID)
 
-	test.carcass.API.GiveExpect(fromUserID, 100, nil, "").Status(http.StatusOK)
+	carcass.API.GiveExpect(fromUserID, 100, nil, "").Status(http.StatusOK)
 
-	test.carcass.API.MoveExpect(fromUserID, toUserID, 100, reason).Status(http.StatusOK)
+	carcass.API.MoveExpect(fromUserID, toUserID, 100, reason).Status(http.StatusOK)
 
-	test.carcass.API.TransactionsExpect(fromUserID).Status(http.StatusOK).
+	carcass.API.TransactionsExpect(fromUserID).Status(http.StatusOK).
 		JSON().
 		Object().
 		Value("transactions").
@@ -29,7 +29,7 @@ func TestMoveWithReason(t *testing.T) {
 		Object().
 		ValueEqual("reason", reason)
 
-	test.carcass.API.TransactionsExpect(toUserID).Status(http.StatusOK).
+	carcass.API.TransactionsExpect(toUserID).Status(http.StatusOK).
 		JSON().
 		Object().
 		Value("transactions").
@@ -38,6 +38,6 @@ func TestMoveWithReason(t *testing.T) {
 		Object().
 		ValueEqual("reason", reason)
 
-	test.carcass.ResetModels(fromUserID)
-	test.carcass.ResetModels(toUserID)
+	carcass.ResetModels(fromUserID)
+	carcass.ResetModels(toUserID)
 }

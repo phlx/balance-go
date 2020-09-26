@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"balance/internal/utils"
+	time2 "balance/internal/pkg/time"
 )
 
 var (
@@ -17,7 +17,7 @@ var (
 func TestClient(t *testing.T) {
 	logger := NewForTest()
 	message := "an example warning message"
-	now := utils.Now()
+	now := time2.Now()
 	logger.WithTime(now).Warning(message)
 
 	out, ok := logger.Out.(TestOutput)

@@ -8,10 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 
-	"balance/internal/controllers"
+	"balance/internal/handlers"
 	"balance/internal/metrics"
+	"balance/internal/pkg/time"
 	"balance/internal/services/core"
-	"balance/internal/utils"
 )
 
 func Controller(coreService *core.Service, stats metrics.Client) gin.HandlerFunc {
@@ -20,15 +20,15 @@ func Controller(coreService *core.Service, stats metrics.Client) gin.HandlerFunc
 		stats.Increment(metrics.ControllersMoveCount)
 
 		var in Request
-		if err := controllers.Validate(context, &in, binding.JSON); err != nil {
+		if err := handlers.Validate(context, &in, binding.JSON); err != nil {
 			context.JSON(http.StatusBadRequest, err.Response)
 			stats.Increment(metrics.Responses400AllCount)
 			return
 		}
 
 		if in.FromUserID == in.ToUserID {
-			context.JSON(http.StatusBadRequest, controllers.ErrorBadRequest(
-				fmt.Sprintf(controllers.ErrorCodeValidation, "to_user_id"),
+			context.JSON(http.StatusBadRequest, handlers.ErrorBadRequest(
+				fmt.Sprintf(handlers.ErrorCodeValidation, "to_user_id"),
 				"Move allowed only between different users",
 			))
 			stats.Increment(metrics.Responses400AllCount)
@@ -40,8 +40,8 @@ func Controller(coreService *core.Service, stats metrics.Client) gin.HandlerFunc
 		txFrom, txTo, err := coreService.Move(in.FromUserID, in.ToUserID, in.Amount, in.Reason, sleep)
 
 		if err == core.ErrorUserNotFound {
-			context.JSON(http.StatusBadRequest, controllers.ErrorBadRequest(
-				controllers.ErrorCodeUserNotFound,
+			context.JSON(http.StatusBadRequest, handlers.ErrorBadRequest(
+				handlers.ErrorCodeUserNotFound,
 				"User was not found",
 			))
 			stats.Increment(metrics.Responses400AllCount)
@@ -49,8 +49,8 @@ func Controller(coreService *core.Service, stats metrics.Client) gin.HandlerFunc
 		}
 
 		if err == core.ErrorInsufficientFunds {
-			context.JSON(http.StatusBadRequest, controllers.ErrorBadRequest(
-				controllers.ErrorCodeInsufficientFunds,
+			context.JSON(http.StatusBadRequest, handlers.ErrorBadRequest(
+				handlers.ErrorCodeInsufficientFunds,
 				"User has insufficient funds",
 			))
 			stats.Increment(metrics.Responses400AllCount)
@@ -58,16 +58,16 @@ func Controller(coreService *core.Service, stats metrics.Client) gin.HandlerFunc
 		}
 
 		if err != nil {
-			context.JSON(http.StatusInternalServerError, controllers.ErrorInternal())
+			context.JSON(http.StatusInternalServerError, handlers.ErrorInternal())
 			stats.Increment(metrics.Responses500AllCount)
 			return
 		}
 
 		context.JSON(http.StatusOK, Response{
 			TransactionFromId:   txFrom.Id,
-			TransactionFromTime: utils.Format(txFrom.CreatedAt),
+			TransactionFromTime: time.Format(txFrom.CreatedAt),
 			TransactionToId:     txTo.Id,
-			TransactionToTime:   utils.Format(txTo.CreatedAt),
+			TransactionToTime:   time.Format(txTo.CreatedAt),
 		})
 		stats.Increment(metrics.Responses200AllCount)
 	}

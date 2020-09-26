@@ -7,9 +7,9 @@ import (
 	"github.com/gavv/httpexpect/v2"
 	"github.com/google/uuid"
 
-	"balance/internal/controllers/give"
-	"balance/internal/controllers/move"
-	"balance/internal/controllers/take"
+	"balance/internal/handlers/give"
+	"balance/internal/handlers/move"
+	"balance/internal/handlers/take"
 	"balance/internal/middlewares"
 )
 
